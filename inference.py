@@ -35,9 +35,9 @@ def inference(args,cfg,inputs,device):
         outputs = model(inputs)
     return outputs
 
-# # example:
-# inputs = torch.randn(1,3,256,128)
-# args = parse_arg()
-# device = torch.device('cuda:2')
-# outputs = inference(args,cfg,inputs,device)
-# print(outputs.shape)
+# example:
+inputs = torch.randn(1,3,256,128)
+args = parse_arg()
+device = torch.device('cuda:2')
+outputs = inference(args,cfg,inputs,device)
+print(outputs.shape)

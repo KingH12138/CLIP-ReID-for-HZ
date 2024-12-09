@@ -105,54 +105,54 @@ class build_transformer(nn.Module):
         self.text_encoder = TextEncoder(clip_model)
 
     def forward(self, x = None, label=None, get_image = False, get_text = False, cam_label= None, view_label=None):
-        if get_text == True:
-            prompts = self.prompt_learner(label) 
-            text_features = self.text_encoder(prompts, self.prompt_learner.tokenized_prompts)
-            return text_features
+        # if get_text == True:
+        #     prompts = self.prompt_learner(label) 
+        #     text_features = self.text_encoder(prompts, self.prompt_learner.tokenized_prompts)
+        #     return text_features
 
-        if get_image == True:
-            image_features_last, image_features, image_features_proj = self.image_encoder(x) 
-            if self.model_name == 'RN50':
-                return image_features_proj[0]
-            elif self.model_name == 'ViT-B-16':
-                return image_features_proj[:,0]
+        # if get_image == True:
+        #     image_features_last, image_features, image_features_proj = self.image_encoder(x) 
+        #     if self.model_name == 'RN50':
+        #         return image_features_proj[0]
+        #     elif self.model_name == 'ViT-B-16':
+        #         return image_features_proj[:,0]
         
-        if self.model_name == 'RN50':
-            image_features_last, image_features, image_features_proj = self.image_encoder(x) 
-            img_feature_last = nn.functional.avg_pool2d(image_features_last, image_features_last.shape[2:4]).view(x.shape[0], -1) 
-            img_feature = nn.functional.avg_pool2d(image_features, image_features.shape[2:4]).view(x.shape[0], -1) 
-            img_feature_proj = image_features_proj[0]
+        # if self.model_name == 'RN50':
+        #     image_features_last, image_features, image_features_proj = self.image_encoder(x) 
+        #     img_feature_last = nn.functional.avg_pool2d(image_features_last, image_features_last.shape[2:4]).view(x.shape[0], -1) 
+        #     img_feature = nn.functional.avg_pool2d(image_features, image_features.shape[2:4]).view(x.shape[0], -1) 
+        #     img_feature_proj = image_features_proj[0]
 
-        elif self.model_name == 'ViT-B-16':
-            if cam_label != None and view_label!=None:
-                cv_embed = self.sie_coe * self.cv_embed[cam_label * self.view_num + view_label]
-            elif cam_label != None:
-                cv_embed = self.sie_coe * self.cv_embed[cam_label]
-            elif view_label!=None:
-                cv_embed = self.sie_coe * self.cv_embed[view_label]
-            else:
-                cv_embed = None
-            image_features_last, image_features, image_features_proj = self.image_encoder(x, cv_embed) 
-            img_feature_last = image_features_last[:,0]
-            img_feature = image_features[:,0]
-            img_feature_proj = image_features_proj[:,0]
+        # elif self.model_name == 'ViT-B-16':
+        if cam_label != None and view_label!=None:
+            cv_embed = self.sie_coe * self.cv_embed[cam_label * self.view_num + view_label]
+        elif cam_label != None:
+            cv_embed = self.sie_coe * self.cv_embed[cam_label]
+        elif view_label!=None:
+            cv_embed = self.sie_coe * self.cv_embed[view_label]
+        else:
+            cv_embed = None
+        image_features_last, image_features, image_features_proj = self.image_encoder(x, cv_embed) 
+        img_feature_last = image_features_last[:,0]
+        img_feature = image_features[:,0]
+        img_feature_proj = image_features_proj[:,0]
 
         feat = self.bottleneck(img_feature) 
         feat_proj = self.bottleneck_proj(img_feature_proj) 
         
-        if self.training:
-            # print("——————————————————————————————————————————————————————————————————")
-            cls_score = self.classifier(feat)
-            cls_score_proj = self.classifier_proj(feat_proj)
-            return [cls_score, cls_score_proj], [img_feature_last, img_feature, img_feature_proj], img_feature_proj
+        # if self.training:
+        #     # print("——————————————————————————————————————————————————————————————————")
+        #     cls_score = self.classifier(feat)
+        #     cls_score_proj = self.classifier_proj(feat_proj)
+        #     return [cls_score, cls_score_proj], [img_feature_last, img_feature, img_feature_proj], img_feature_proj
 
-        else:
-            if self.neck_feat == 'after':
-                print("Test with feature after BN")
-                return torch.cat([feat, feat_proj], dim=1)
-            else:
-                # print("——————————————————————————————————————————————————————————————————")
-                return torch.cat([img_feature, img_feature_proj], dim=1)
+        # else:
+        #     if self.neck_feat == 'after':
+        #         print("Test with feature after BN")
+        #         return torch.cat([feat, feat_proj], dim=1)
+        #     else:
+        #         # print("——————————————————————————————————————————————————————————————————")
+        return torch.cat([img_feature, img_feature_proj], dim=1)
 
 
     def load_param(self, trained_path):
