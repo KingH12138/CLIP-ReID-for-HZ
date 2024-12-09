@@ -9,6 +9,7 @@ from torch.cuda import amp
 import torch.distributed as dist
 from torch.nn import functional as F
 from loss.supcontrast import SupConLoss
+from tqdm import tqdm
 
 def do_train_stage2(cfg,
              model,
@@ -207,7 +208,7 @@ def do_inference(cfg,
     model.eval()
     img_path_list = []
 
-    for n_iter, (img, pid, camid, camids, target_view, imgpath) in enumerate(val_loader):
+    for n_iter, (img, pid, camid, camids, target_view, imgpath) in tqdm(enumerate(val_loader)):
         with torch.no_grad():
             img = img.to(device)
             if cfg.MODEL.SIE_CAMERA:
@@ -219,6 +220,14 @@ def do_inference(cfg,
             else: 
                 target_view = None
             feat = model(img, cam_label=camids, view_label=target_view)
+            # print(feat.shape)
+            ############################################################
+            # 2024/12/2-jhb-add-用于显示每个batch处理所耗second。
+            # s = time.time()    
+            # feat = model(img, cam_label=camids, view_label=target_view)
+            # e = time.time()
+            # print(f"Batch size {img.shape[0]} take {e-s} seconds.")
+            ############################################################
             evaluator.update((feat, pid, camid))
             img_path_list.extend(imgpath)
 

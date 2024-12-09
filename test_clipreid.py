@@ -39,14 +39,20 @@ if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES'] = cfg.MODEL.DEVICE_ID
 
     train_loader, train_loader_normal, val_loader, num_query, num_classes, camera_num, view_num = make_dataloader(cfg)
-
     model = make_model(cfg, num_class=num_classes, camera_num=camera_num, view_num = view_num)
     model.load_param(cfg.TEST.WEIGHT)
-
+    ##########################################################
+    # 2024/12/2-jhb-add-用于计算模型参与运行的参数大小
+    def calculate_model_size(model):
+        return sum(p.numel() * p.storage().element_size() for p in model.parameters())
+    # 调用函数计算模型大小
+    model_size = calculate_model_size(model)
+    print(f"Model size: {model_size / (1024 ** 2):.2f} MB")
+    ##########################################################
     if cfg.DATASETS.NAMES == 'VehicleID':
         for trial in range(10):
             train_loader, train_loader_normal, val_loader, num_query, num_classes, camera_num, view_num = make_dataloader(cfg)
-            rank_1, rank5, mAP = do_inference(cfg,
+            rank_1, rank5, mAP = do_inference(cfg, # type: ignore
                  model,
                  val_loader,
                  num_query)
@@ -66,5 +72,6 @@ if __name__ == "__main__":
                  model,
                  val_loader,
                  num_query)
+
 
 

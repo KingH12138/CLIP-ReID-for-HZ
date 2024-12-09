@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES=2,3 python test_clipreid.py --config_file configs/person/vit_clipreid.yml TEST.WEIGHT '/data/jhb_data/checkpoints/MSMT17_clipreid_ViT-B-16_60.pth'
+# nohup bash nohup.sh > output.log 2>&1 &

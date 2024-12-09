@@ -18,7 +18,7 @@ class MSMT17(BaseImageDataset):
 
     Dataset statistics:
     # identities: 4101
-    # images: 32621 (train) + 11659 (query) + 82161 (gallery)
+    # images: 32621 (train) + 11659 (query) + 82161 (gallery/test)
     # cameras: 15
     """
     dataset_dir = 'MSMT17'
@@ -29,6 +29,7 @@ class MSMT17(BaseImageDataset):
         self.dataset_dir = osp.join(root, self.dataset_dir)
         self.train_dir = osp.join(self.dataset_dir, 'train')
         self.test_dir = osp.join(self.dataset_dir, 'test')
+        self.query_dir = osp.join(self.dataset_dir, 'query')
         self.list_train_path = osp.join(self.dataset_dir, 'list_train.txt')
         self.list_val_path = osp.join(self.dataset_dir, 'list_val.txt')
         self.list_query_path = osp.join(self.dataset_dir, 'list_query.txt')
@@ -38,7 +39,8 @@ class MSMT17(BaseImageDataset):
         train = self._process_dir(self.train_dir, self.list_train_path)
         val = self._process_dir(self.train_dir, self.list_val_path)
         train += val
-        query = self._process_dir(self.test_dir, self.list_query_path)
+        # query = self._process_dir(self.test_dir, self.list_query_path)
+        query = self._process_dir(self.query_dir, self.list_query_path)
         gallery = self._process_dir(self.test_dir, self.list_gallery_path)
         if verbose:
             print("=> MSMT17 loaded")
@@ -69,13 +71,14 @@ class MSMT17(BaseImageDataset):
         for img_idx, img_info in enumerate(lines):
             img_path, pid = img_info.split(' ')
             pid = int(pid)  # no need to relabel
-            camid = int(img_path.split('_')[2])
+            # camid = int(img_path.split('_')[2])
+            camid = int(img_path.split('_')[1][1:])
             img_path = osp.join(dir_path, img_path)
             dataset.append((img_path, self.pid_begin+pid, camid-1, 0))
             pid_container.add(pid)
             cam_container.add(camid)
         print(cam_container, 'cam_container')
         # check if pid starts from 0 and increments with 1
-        for idx, pid in enumerate(pid_container):
-            assert idx == pid, "See code comment for explanation"
+        # for idx, pid in enumerate(pid_container):
+        #     assert idx == pid, "See code comment for explanation"
         return dataset
