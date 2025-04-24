@@ -5,12 +5,15 @@ from utils.reranking import re_ranking
 
 
 def euclidean_distance(qf, gf):
+    qf = qf.to(torch.long)
+    gf = gf.to(torch.long)
     m = qf.shape[0]
     n = gf.shape[0]
     dist_mat = torch.pow(qf, 2).sum(dim=1, keepdim=True).expand(m, n) + \
                torch.pow(gf, 2).sum(dim=1, keepdim=True).expand(n, m).t()
-    dist_mat.addmm_(1, -2, qf, gf.t())
-    return dist_mat.cpu().numpy()
+    dist_mat.addmm_(1, -2, qf, gf.t()).int()
+    output = dist_mat.cpu().numpy()
+    return output
 
 def cosine_similarity(qf, gf):
     epsilon = 0.00001

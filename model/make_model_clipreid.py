@@ -133,12 +133,12 @@ class build_transformer(nn.Module):
         else:
             cv_embed = None
         image_features_last, image_features, image_features_proj = self.image_encoder(x, cv_embed) 
-        img_feature_last = image_features_last[:,0]
+        # img_feature_last = image_features_last[:,0]
         img_feature = image_features[:,0]
         img_feature_proj = image_features_proj[:,0]
 
-        feat = self.bottleneck(img_feature) 
-        feat_proj = self.bottleneck_proj(img_feature_proj) 
+        # feat = self.bottleneck(img_feature) 
+        # feat_proj = self.bottleneck_proj(img_feature_proj) 
         
         # if self.training:
         #     # print("——————————————————————————————————————————————————————————————————")
@@ -152,7 +152,13 @@ class build_transformer(nn.Module):
         #         return torch.cat([feat, feat_proj], dim=1)
         #     else:
         #         # print("——————————————————————————————————————————————————————————————————")
-        return torch.cat([img_feature, img_feature_proj], dim=1)
+        # 手动量化输出为INT8
+        output = torch.cat([img_feature, img_feature_proj], dim=1)
+        # scale = (output.abs().max() / 127).item()  # 转为float
+        # zero_point = 0
+        # output_int8 = torch.quantize_per_tensor(output, scale, zero_point, torch.qint8)
+        output*=10000
+        return output.long()  # 返回int64类型的输出
 
 
     def load_param(self, trained_path):

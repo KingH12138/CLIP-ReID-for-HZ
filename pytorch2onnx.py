@@ -21,7 +21,7 @@ class OnnxTransformer:
         model = make_model(self.cfg,1041,0,0)
         model.eval()
         model.to(self.device)
-        model.load_param(self.cfg.TEST.WEIGHT)
+        model.load_param(self.cfg.TEST.WEIGHT)        
         self.model = model
 
     def transformModel(self):
@@ -34,6 +34,6 @@ class OnnxTransformer:
 
 # example
 transformer = OnnxTransformer('configs/person/vit_clipreid.yml',
-                              'cuda:2')
+                              'cuda')
 transformer.getModel()
 transformer.transformModel()

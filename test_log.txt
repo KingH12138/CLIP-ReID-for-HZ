@@ -1,6 +1,6 @@
-2024-12-08 00:46:22,000 transreid INFO: Namespace(config_file='configs/person/vit_clipreid.yml', opts=['TEST.WEIGHT', '/data/jhb_data/checkpoints/MSMT17_clipreid_ViT-B-16_60.pth'])
-2024-12-08 00:46:22,000 transreid INFO: Loaded configuration file configs/person/vit_clipreid.yml
-2024-12-08 00:46:22,001 transreid INFO: 
+2025-04-24 20:16:48,407 transreid INFO: Namespace(config_file='configs/person/vit_clipreid.yml', opts=[])
+2025-04-24 20:16:48,407 transreid INFO: Loaded configuration file configs/person/vit_clipreid.yml
+2025-04-24 20:16:48,407 transreid INFO: 
 MODEL:
   PRETRAIN_CHOICE: 'imagenet'
   METRIC_LOSS_TYPE: 'triplet'
@@ -69,12 +69,12 @@ TEST:
   WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'
-  WEIGHT: '/data/jhb_data/checkpoints/MSMT17_clipreid_ViT-B-16_60.pth'
+  WEIGHT: '/data/jhb_data/checkpoints/Market1501_clipreid_ViT-B-16_60.pth'
 
 DATASETS:
-#   NAMES: ('market1501')
-#   ROOT_DIR: ('')
-# OUTPUT_DIR: ''
+  NAMES: ('market1501')
+  ROOT_DIR: ('/data/jhb_data/datasets/st_reid')
+OUTPUT_DIR: '/home/tan/jhb/CLIP-ReID-for-HZ'
 
 #   NAMES: ('dukemtmc')
 #   ROOT_DIR: ('')
@@ -84,20 +84,20 @@ DATASETS:
 #   ROOT_DIR: ('')
 # OUTPUT_DIR: ''
 
-  NAMES: ('msmt17') # 这个是数据集在factory中的名称，如果不对应可以修改
-  ROOT_DIR: ('/data/jhb_data/datasets') # 数据集所在父路径
-OUTPUT_DIR: '/home/xmu/jhb/codes/CLIP-ReID' # log输出父目录 
+#   NAMES: ('msmt17') # 这个是数据集在factory中的名称，如果不对应可以修改
+#   ROOT_DIR: ('/data/jhb_data/datasets') # 数据集所在父路径
+# OUTPUT_DIR: '/home/xmu/jhb/codes/CLIP-ReID' # log输出父目录 
 
 # CUDA_VISIBLE_DEVICES=2,3 python train_clipreid.py --config_file configs/person/vit_clipreid.yml
 
-2024-12-08 00:46:22,001 transreid INFO: Running with config:
+2025-04-24 20:16:48,407 transreid INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 4
   NUM_WORKERS: 8
   SAMPLER: softmax_triplet
 DATASETS:
-  NAMES: msmt17
-  ROOT_DIR: /data/jhb_data/datasets
+  NAMES: market1501
+  ROOT_DIR: /data/jhb_data/datasets/st_reid
 INPUT:
   PADDING: 10
   PIXEL_MEAN: [0.5, 0.5, 0.5]
@@ -132,7 +132,7 @@ MODEL:
   STRIDE_SIZE: [16, 16]
   TRANSFORMER_TYPE: None
   TRIPLET_LOSS_WEIGHT: 1.0
-OUTPUT_DIR: /home/xmu/jhb/codes/CLIP-ReID
+OUTPUT_DIR: /home/tan/jhb/CLIP-ReID-for-HZ
 SOLVER:
   MARGIN: 0.3
   SEED: 1234
@@ -187,10 +187,10 @@ TEST:
   IMS_PER_BATCH: 64
   NECK_FEAT: before
   RE_RANKING: False
-  WEIGHT: /data/jhb_data/checkpoints/MSMT17_clipreid_ViT-B-16_60.pth
-2024-12-08 00:46:27,056 transreid.test INFO: Enter inferencing
-2024-12-08 00:51:51,487 transreid.test INFO: Validation Results 
-2024-12-08 00:51:51,488 transreid.test INFO: mAP: 73.3%
-2024-12-08 00:51:51,488 transreid.test INFO: CMC curve, Rank-1  :88.7%
-2024-12-08 00:51:51,488 transreid.test INFO: CMC curve, Rank-5  :94.4%
-2024-12-08 00:51:51,488 transreid.test INFO: CMC curve, Rank-10 :95.7%
+  WEIGHT: /data/jhb_data/checkpoints/Market1501_clipreid_ViT-B-16_60.pth
+2025-04-24 20:16:57,141 transreid.test INFO: Enter inferencing
+2025-04-24 20:20:35,230 transreid.test INFO: Validation Results 
+2025-04-24 20:20:35,231 transreid.test INFO: mAP: 89.6%
+2025-04-24 20:20:35,231 transreid.test INFO: CMC curve, Rank-1  :95.3%
+2025-04-24 20:20:35,231 transreid.test INFO: CMC curve, Rank-5  :98.3%
+2025-04-24 20:20:35,231 transreid.test INFO: CMC curve, Rank-10 :99.0%
